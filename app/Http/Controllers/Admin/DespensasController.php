@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Pantrie;
+use File;
 use Validator;
 
 class DespensasController extends Controller
@@ -16,7 +17,12 @@ class DespensasController extends Controller
      */
     public function index()
     {
-        return view('admin.despensas');
+        $datos=\DB::table('pantries')
+            ->select('pantries.*')
+            ->orderBy('id','DESC')
+            ->get();
+        return view('admin.despensas')
+            ->with('despensas',$datos);
     }
 
     /**
@@ -51,14 +57,14 @@ class DespensasController extends Controller
             $img = $request->file('img');
             $nombre = time().'.'.$img->getClientOriginalExtension();
             $destino = public_path('img/despensas');
-            $request->img->move($destino.'/'.$nombre);
+            $request->img->move($destino, $nombre);
             $despensa = Pantrie::create([
                 'tipoDes'=>$request->tipo,
                 'contenido'=>$request->contenido,
                 'img'=>$nombre,
             ]);
             $despensa->save();
-            dd($despensa->id);
+            return back()->with('Listo','Se ha insertado correctamente');
         }
     }
 
@@ -104,6 +110,11 @@ class DespensasController extends Controller
      */
     public function destroy($id)
     {
-        //
+        $despensa=Pantrie::find($id);
+        if(File::exists(public_path('img/despensas/'.$despensa->img) )){
+            unlink(public_path('img/despensas/'.$despensa->img));
+        }
+        $despensa->delete();
+        return back()->with('Listo','Se ha eliminado correctamente');
     }
 }

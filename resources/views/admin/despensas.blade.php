@@ -11,7 +11,7 @@
           <div class="col-sm-6">
             <ol class="breadcrumb float-sm-right">
               <li class="breadcrumb-item">
-                <button class="btn btn-outline-primary btn-sm" data-toggle="modal" data-target='#modal-add'>
+                <button class="btn btn-outline-primary btn-sm" data-toggle="modal" data-target="#modal-add">
                     <i class="fa fa-plus"></i> Agregar Despensa</button> 
               <li>
             </ol>
@@ -21,7 +21,56 @@
     </div>
     <!-- /.content-header -->
 
+<div class="content">
+  <div class="container-fluid">
+    <div class="row">
+    @if($message=Session::get('Listo'))
+      <div class="alert alert-suiccess alert-dismissable fade show col-12" role="alert">
+        <h5>Listo:</h5>
+        <p>{{$message}}</p>
+      </div>
+    @endif
 
+    <table class="table">
+      <thead>
+        <tr>
+          <th>Id</th>
+          <th>Imagen</th>
+          <th>Tipo de Despensa</th>
+          <th>Contenido</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        @foreach($despensas as $d)
+          <tr>
+            <td>{{ $d->id }}</td>
+            <td>
+              <img src="{{ asset('img/despensas/'.$d->img ) }}" alt="" width="200px">
+              {{ $d->img }}
+            </td>
+            <td>{{ $d->tipoDes }}</td>
+            <td>{{ $d->contenido }}</td>
+            <td>
+              <button class="btn b tn-danger btnEliminar" data-id="{{ $d->id }}"
+                data-toggle="modal" data-target="#modal-delete">
+                <i class="fa fa-trash"></i>
+              </button>
+              <form action="{{ url('/admin/despensas', ['id'=>$d->id]) }}"
+                method="POST" id="formEliminar_{{ $d->id }}">
+              @csrf
+              <input type="hidden" name="id" value="{{ $d->id }}">
+              <input type="hidden" name="_method" value="delete">
+              </form>
+            </td>
+          </tr>
+        @endforeach
+      </tbody>
+    </table>
+
+    </div>
+  </div>
+</div>
 
 
 
@@ -72,9 +121,51 @@
       </div>
       <!-- /.modal -->
 
+      <div class="modal fade" id="modal-delete">
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h4 class="modal-title">Eliminar Despensa</h4>
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
+
+              <div class="modal-body">
+                  <h2 class="h6">Desea Eliminar la Despensa</h2>
+              </div>
+              <div class="modal-footer justify-content-between">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Cerrar</button>
+                <button type="button" class="btn btn-danger btnCloseEliminar">Eliminar</button>
+              </div>
+
+          </div>
+          <!-- /.modal-content -->
+        </div>
+        <!-- /.modal-dialog -->
+      </div>
+      <!-- /.modal -->
+
+
+
 @endsection
 
 @section('scripts')
-  <script> console.log('asasdasdssdadasdas'); </script>
+  <script>
+    var idEliminar=-1;
+      $(document).ready(function(){
+        @if($message= Session::get('errorInsert'))
+          $("modal-add").modal('show');
+        @endif
+
+        $(".btnEliminar").click(function(){
+          var id=$(this).data('id');
+          idEliminar=id;
+        });
+        $(".btnCloseEliminar").click(function(){
+          $("#formEliminar_"+idEliminar).submit();
+        })
+      });
+  </script>
 
 @endsection
