@@ -6,6 +6,8 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Pantrie;
 use File;
+use Auth;
+use Pdf;
 use Validator;
 
 class DespensasController extends Controller
@@ -17,6 +19,7 @@ class DespensasController extends Controller
      */
     public function index()
     {
+        if(Auth::user()->level !="admin"){return redirect('/admin');}
         $datos=\DB::table('pantries')
             ->select('pantries.*')
             ->orderBy('id','DESC')
@@ -44,22 +47,22 @@ class DespensasController extends Controller
     public function store(Request $request)
     {
         $validator= Validator::make($request->all(),[
-            'tipo'=>'required|max:2|integer',
+            'tipoDes'=>'required|max:100|string',
             'contenido'=>'required|max:500|string',
-            'img'=>'required|image|mimes:jpg,jpeg,png,gif,svg|max:2048',
+            'img'=>'required|image|mimes:jpg,jpeg,png,gif,svg|max:10000',
         ]);
         if($validator->fails()){
             return back()
                 ->withInput()
                 ->with('errorInsert','Favor de llenar todos los campos')
-                ->withErrors('Favor de llenar todos los campos');
+                ->withErrors($validator);
         }else{
             $img = $request->file('img');
             $nombre = time().'.'.$img->getClientOriginalExtension();
             $destino = public_path('img/despensas');
             $request->img->move($destino, $nombre);
             $despensa = Pantrie::create([
-                'tipoDes'=>$request->tipo,
+                'tipoDes'=>$request->tipoDes,
                 'contenido'=>$request->contenido,
                 'img'=>$nombre,
             ]);
@@ -85,9 +88,40 @@ class DespensasController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function edit($id)
+    public function edit($Request, $request)
     {
-        //
+        $validator= Validator::make($request->all(),[
+            'tipoDes'=>'required|max:100|string',
+            'contenido'=>'required|max:500|string',
+        ]);
+        if($validator->fails()){
+            return back()
+                ->withInput()
+                ->with('errorEdit','Favor de llenar todos los campos')
+                ->withErrors($validator);
+        }else{
+            $despensa=Pantrie::find($request->id);
+            $despensa->tipoDes=$request->tipoDes;
+            $despensa->contenido=$request->contenido;
+
+            $validator2= Validator::make($request->all(),[
+                'img'=>'required|image|mimes:jpg,jpeg,png,gif,svg|max:10000',
+            ]);
+            if(!$validator2->fails()){
+                $img = $request->file('img');
+                $nombre = time().'.'.$img->getClientOriginalExtension();
+                $destino = public_path('img/despensas');
+                $request->img->move($destino, $nombre);
+                if(File::exists(public_path('img/despensas/'.$despensa->img) )){
+                    unlink(public_path('img/despensas/'.$despensa->img));
+                }
+                $despensa->img=$nombre;
+            }
+
+            $despensa->save();
+            return back()->with('Listo','Se ha actualizado correctamente');
+            
+        }
     }
 
     /**
@@ -116,5 +150,17 @@ class DespensasController extends Controller
         }
         $despensa->delete();
         return back()->with('Listo','Se ha eliminado correctamente');
+    }
+    public function generar(){
+        $datos=\DB::table('pantries')
+            ->select('pantries.*')
+            ->orderBy('pantries.id', 'DESC')
+            ->get();
+
+        $fecha=date("Y-m-d");
+        $todo=compact('datos','fecha');
+        $pdf = Pdf::loadView('reportes.despensas', $todo);
+        //return $pdf->download('reporte.pdf');
+        return $pdf->stream('ReporteAlim_'.date('Y_m_d_h_m_s').'.pdf');
     }
 }
