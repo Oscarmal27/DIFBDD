@@ -7,8 +7,11 @@
     <!-- Main content -->
     <section class="content">
       <div class="container-fluid">
-       ad
-        <!-- /.row (main row) -->
+      <thead> </thead> <tr></tr> <tr></tr>
+      <tbody>
+       <img src="{{ asset('img/dif.jpg' ) }}" alt="" width="700px" height="700px">
+       </tbody> 
+       <!-- /.row (main row) -->
       </div><!-- /.container-fluid -->
     </section>
     <!-- /.content -->

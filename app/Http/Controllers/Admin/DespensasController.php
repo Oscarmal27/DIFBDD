@@ -17,6 +17,10 @@ class DespensasController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
+    public function __construct()
+    {
+        $this->middleware('auth');
+    }
     public function index()
     {
         if(Auth::user()->level !="admin"){return redirect('/admin');}
@@ -48,8 +52,8 @@ class DespensasController extends Controller
     {
         $validator= Validator::make($request->all(),[
             'tipoDes'=>'required|max:100|string',
-            'contenido'=>'required|max:500|string',
-            'img'=>'required|image|mimes:jpg,jpeg,png,gif,svg|max:10000',
+            'contenido'=>'required|max:1000|string',
+            'img'=>'required|image|mimes:jpg,jfif,jpeg,png,gif,svg|max:10000',
         ]);
         if($validator->fails()){
             return back()
@@ -92,7 +96,8 @@ class DespensasController extends Controller
     {
         $validator= Validator::make($request->all(),[
             'tipoDes'=>'required|max:100|string',
-            'contenido'=>'required|max:500|string',
+            'contenido'=>'required|max:1000|string',
+            'img'=>'required|image|mimes:jpg,jfif,jpeg,png,gif,svg|max:10000',
         ]);
         if($validator->fails()){
             return back()
@@ -105,7 +110,7 @@ class DespensasController extends Controller
             $despensa->contenido=$request->contenido;
 
             $validator2= Validator::make($request->all(),[
-                'img'=>'required|image|mimes:jpg,jpeg,png,gif,svg|max:10000',
+                'img'=>'required|image|mimes:jpg,jfif,jpeg,png,gif,svg|max:10000',
             ]);
             if(!$validator2->fails()){
                 $img = $request->file('img');
@@ -161,6 +166,6 @@ class DespensasController extends Controller
         $todo=compact('datos','fecha');
         $pdf = Pdf::loadView('reportes.despensas', $todo);
         //return $pdf->download('reporte.pdf');
-        return $pdf->stream('ReporteAlim_'.date('Y_m_d_h_m_s').'.pdf');
+        return $pdf->stream('ReporteAlim_Despensas_'.date('Y_m_d_h_m_s').'.pdf');
     }
 }

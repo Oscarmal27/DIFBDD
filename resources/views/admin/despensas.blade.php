@@ -11,8 +11,8 @@
           <div class="col-sm-6">
             <ol class="breadcrumb float-sm-right">
               <li class="breadcrumb-item">
-                <a class="btn btn-outline-primary btn-sm" target="_blank" href="/admin/generarPDF">
-                    <i class="fa fa-print"></i> Imprimir Datos</button> 
+                <a class="btn btn-outline-primary btn-sm" target="_blank">
+                    <i class="fa fa-print"></i> Imprimir Datos</a> 
               <li>
               <li class="breadcrumb-item">
                 <button class="btn btn-outline-primary btn-sm" data-toggle="modal" data-target="#modal-add">
@@ -38,7 +38,6 @@
     <table class="table">
       <thead>
         <tr>
-          <th>Id</th>
           <th>Imagen</th>
           <th>Tipo de Despensa</th>
           <th>Contenido</th>
@@ -48,7 +47,6 @@
       <tbody>
         @foreach($despensas as $d)
           <tr>
-            <td>{{ $d->id }}</td>
             <td>
               <img src="{{ asset('img/despensas/'.$d->img ) }}" alt="" width="100px" height="100px">
               {{ $d->img }}

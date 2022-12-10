@@ -7,5 +7,5 @@ use Illuminate\Database\Eloquent\Model;
 
 class Program extends Model
 {
-    protected $fillable = ['nombre','idDes'];
+    protected $fillable = ['nombre','idDes', 'img'];
 }

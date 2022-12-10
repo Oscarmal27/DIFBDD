@@ -17,6 +17,7 @@ return new class extends Migration
             $table->increments('id');
             $table->string('nombre');
             $table->integer('idDes')->unsigned();
+            $table->string('img');
             $table->timestamps();
 
             $table->foreign('idDes')->references('id')->on('pantries');

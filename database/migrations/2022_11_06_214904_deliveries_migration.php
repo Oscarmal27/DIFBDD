@@ -16,9 +16,9 @@ return new class extends Migration
         Schema::create('deliveries', function (Blueprint $table) {
             $table->increments('id');
             $table->integer('idBen')->unsigned();
-            $table->integer('cantidad');
-            $table->integer('cantAPagar');
-            $table->boolean('pago');
+            $table->string('cantidad');
+            $table->string('cantAPagar');
+            $table->string('pago');
             $table->string('img');
             $table->timestamps();
 

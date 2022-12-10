@@ -31,7 +31,7 @@
                   <p>Home</p>
                 </a>
               </li>
-              @if(Auth::user()->level == "cliente")
+              @if(Auth::user()->level == "admin")
               <li class="nav-item">
                 <a href="/admin/beneficiarios" class="nav-link">
                   <i class="far fa-list nav-icon"></i>
@@ -51,7 +51,7 @@
                 </a>
               </li>
               @endif
-              @if(Auth::user()->level == "cliente")
+              @if(Auth::user()->level == "cliente" || Auth::user()->level == "admin")
               <li class="nav-item">
                 <a href="/admin/programas" class="nav-link">
                   <i class="far fa-list nav-icon"></i>

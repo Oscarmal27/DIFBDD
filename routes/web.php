@@ -23,12 +23,18 @@ Route::group(['prefix'=>'admin','as'=>'admin.'], function(){
     Route::get('/entregas', [App\Http\Controllers\Admin\EntregasController::class,'index'] );
     Route::get('/programas', [App\Http\Controllers\Admin\ProgramasController::class,'index'] );
     Route::post('/despensas/edit', [App\Http\Controllers\Admin\DespensasController::class,'edit'] );
-
+    Route::post('/beneficiarios/edit', [App\Http\Controllers\Admin\BeneficiariosController::class,'edit'] );
+    Route::post('/entregas/edit', [App\Http\Controllers\Admin\EntregasController::class,'edit'] );
+    Route::post('/programas/edit', [App\Http\Controllers\Admin\ProgramasController::class,'edit'] );
+    
     Route::get('/generarPDF', [App\Http\Controllers\Admin\DespensasController::class,'generar'] );
 
 
     Route::resource('despensas',App\Http\Controllers\Admin\DespensasController::class);
     Route::resource('usuarios',App\Http\Controllers\Admin\UsuariosController::class);
+    Route::resource('programas',App\Http\Controllers\Admin\ProgramasController::class);
+    Route::resource('beneficiarios',App\Http\Controllers\Admin\BeneficiariosController::class);
+    Route::resource('entregas',App\Http\Controllers\Admin\EntregasController::class);
 
     
 

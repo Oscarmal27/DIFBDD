@@ -11,6 +11,10 @@
         <div class="col-sm-6">
           <ol class="breadcrumb float-sm-right">
             <li class="breadcrumb-item">
+              <a class="btn btn-outline-primary btn-sm" target="_blank">
+                  <i class="fa fa-print"></i> Imprimir Datos</a> 
+            <li>
+            <li class="breadcrumb-item">
               <button class="btn btn-outline-primary btn-sm" data-toggle="modal" data-target="#modal-add">
                   <i class="fa fa-plus"></i> Agregar Programa</button> 
             <li>
@@ -34,38 +38,36 @@
   <table class="table">
     <thead>
       <tr>
-        <th>Id</th>
+        <th>Nombre del Programa</th>
+        <th>Despensa que se entrega</th>
         <th>Imagen</th>
-        <th>Tipo de Despensa</th>
-        <th>Contenido</th>
         <th></th>
       </tr>
     </thead>
     <tbody>
-      @foreach($despensas as $d)
+      @foreach($programas as $p)
         <tr>
-          <td>{{ $d->id }}</td>
+          <td>{{ $p->nombre }}</td>
+          <td>{{ $p->despensa }}</td>
           <td>
-            <img src="{{ asset('img/despensas/'.$d->img ) }}" alt="" width="100px" height="100px">
-            {{ $d->img }}
+            <img src="{{ asset('img/programas/'.$p->img ) }}" alt="" width="100px" height="100px">
+            {{ $p->img }}
           </td>
-          <td>{{ $d->tipoDes }}</td>
-          <td>{{ $d->contenido }}</td>
           <td>
-            <button class="btn b tn-primary btnEdit" data-id="{{ $d->id }}"
-              data-tipoDes="{{ $d->tipoDes }}"
-              data-contenido="{{ $d->contenido }}"
+            <button class="btn b tn-primary btnEdit" data-id="{{ $p->id }}"
+              data-tipoDes="{{ $p->nombre }}"
+              data-contenido="{{ $p->idDes }}"
               data-toggle="modal" data-target="#modal-edit">
               <i class="fa fa-edit"></i>
             </button>
-            <button class="btn b tn-danger btnEliminar" data-id="{{ $d->id }}"
+            <button class="btn b tn-danger btnEliminar" data-id="{{ $p->id }}"
               data-toggle="modal" data-target="#modal-delete">
               <i class="fa fa-trash"></i>
             </button>
-            <form action="{{ url('/admin/despensas', ['id'=>$d->id]) }}"
-              method="POST" id="formEliminar_{{ $d->id }}">
+            <form action="{{ url('/admin/programas', ['id'=>$p->id]) }}"
+              method="POST" id="formEliminar_{{ $p->id }}">
             @csrf
-            <input type="hidden" name="id" value="{{ $d->id }}">
+            <input type="hidden" name="id" value="{{ $p->id }}">
             <input type="hidden" name="_method" value="delete">
             </form>
           </td>
@@ -83,12 +85,12 @@
       <div class="modal-dialog">
         <div class="modal-content">
           <div class="modal-header">
-            <h4 class="modal-title">Editar Despensa</h4>
+            <h4 class="modal-title">Editar Programa</h4>
             <button type="button" class="close" data-dismiss="modal" aria-label="Close">
               <span aria-hidden="true">&times;</span>
             </button>
           </div>
-          <form action="/admin/despensas/edit" method="POST" enctype="multipart/form-data">
+          <form action="/admin/programas/edit" method="POST" enctype="multipart/form-data">
             @if($message=Session::get('errorInsert'))
                 <div class="alert alert-danger alert-dismissable fade show col-12" role="alert">
                     <h5>Error:</h5>
@@ -103,12 +105,16 @@
             <div class="modal-body">
               <input type="hidden" name="idEdit" id="id">
                 <div class="form-group">
-                  <label for="tipoDes">Tipo</label>
-                  <input type="integer" class="form-control form-control-border" id="tipoEdit" min="1" name="tipoDes" value="{{ @old('tipoDes') }}">
+                  <label for="nombre">Nombre del Programa</label>
+                  <input type="text" class="form-control form-control-border" id="nombreEdit" name="nombre" value="{{ @old('nombre') }}">
                 </div>
                 <div class="form-group">
-                  <label for="contenido">Contenido</label>
-                  <input type="text" class="form-control form-control-border" id="contenidoEdit" name="contenido" value="{{ @old('contenido') }}">
+                  <label for="idDes">Nombre de la despensa</label>
+                  <select name="idDes" id="idDesEdit" class="form-control">
+                    @foreach($despensas as $d)
+                      <option value="{{$d->id}}"> {{$d->tipoDes}} </option>
+                    @endforeach
+                  </select>
                 </div>
                 <div class="form-group">
                   <label for="img">Imagen</label>
@@ -133,12 +139,12 @@
       <div class="modal-dialog">
         <div class="modal-content">
           <div class="modal-header">
-            <h4 class="modal-title">Agregar Despensa</h4>
+            <h4 class="modal-title">Agregar Programa</h4>
             <button type="button" class="close" data-dismiss="modal" aria-label="Close">
               <span aria-hidden="true">&times;</span>
             </button>
           </div>
-          <form action="/admin/despensas" method="POST" enctype="multipart/form-data">
+          <form action="/admin/programas" method="POST" enctype="multipart/form-data">
             @if($message=Session::get('errorInsert'))
                 <div class="alert alert-danger alert-dismissable fade show col-12" role="alert">
                     <h5>Error:</h5>
@@ -151,14 +157,18 @@
             @endif
             @csrf
             <div class="modal-body">
-                <div class="form-group">
-                  <label for="tipoDes">Tipo</label>
-                  <input type="integer" class="form-control form-control-border" id="tipo" min="1" name="tipoDes" value="{{ @old('tipoDes') }}">
+            <div class="form-group">
+                  <label for="nombre">Nombre del Programa</label>
+                  <input type="text" class="form-control form-control-border" id="nombre" name="nombre" value="{{ @old('nombre') }}">
                 </div>
                 <div class="form-group">
-                  <label for="contenido">Contenido</label>
-                  <input type="text" class="form-control form-control-border" id="contenido" name="contenido" value="{{ @old('contenido') }}">
-                </div>
+                  <label for="idDes">Despensa</label>
+                  <select name="idDes" id="idDes" class="form-control">
+                    @foreach($despensas as $d)
+                      <option value="{{$d->id}}"> {{$d->tipoDes}} </option>
+                    @endforeach
+                  </select>
+                   </div>
                 <div class="form-group">
                   <label for="img">Imagen</label>
                   <input type="file" class="form-control form-control-border" id="img" name="img" value="{{ @old('img') }}">
@@ -182,14 +192,14 @@
       <div class="modal-dialog">
         <div class="modal-content">
           <div class="modal-header">
-            <h4 class="modal-title">Eliminar Despensa</h4>
+            <h4 class="modal-title">Eliminar Programa</h4>
             <button type="button" class="close" data-dismiss="modal" aria-label="Close">
               <span aria-hidden="true">&times;</span>
             </button>
           </div>
 
             <div class="modal-body">
-                <h2 class="h6">Desea Eliminar la Despensa</h2>
+                <h2 class="h6">¿Desea Eliminar el Programa?</h2>
             </div>
             <div class="modal-footer justify-content-between">
               <button type="button" class="btn btn-default" data-dismiss="modal">Cerrar</button>
@@ -224,11 +234,11 @@
       });
       $(".btnEdit").click(function(){
         var id=$(this).data('id');
-        var tipoDes=$(this).data('tipoDes');
-        var contenido=$(this).data('contenido');
+        var nombre=$(this).data('nombre');
+        var idDes=$(this).data('idDes');
         $("#idEdit").val(id);
-        $("#tipoDesEdit").val(tipoDes);
-        $("#contenidoEdit").val(contenido);
+        $("#nombreEdit").val(nombre);
+        $("#idDesEdit").val(idDes);
       });
       $(".btnCloseEliminar").click(function(){
         $("#formEliminar_"+idEliminar).submit();
